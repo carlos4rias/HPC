@@ -1,8 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define line_buffer 2048
-
 
 void* init_matriz (int rows, int cols) {
   return malloc (sizeof (int[rows][cols]));
@@ -46,8 +44,10 @@ void write_result(int rows, int cols, int matriz[][cols]) {
   FILE *fw = fopen("resulting_matrix", "w");
   int i, j;
   for (i = 0; i < rows; i++) {
-    for (j = 0; j < cols; j++) 
-      fprintf(fw, "%d ", matriz[i][j]);
+    for (j = 0; j < cols; j++) {
+      fprintf(fw, "%d", matriz[i][j]);
+      if (j + 1 < cols) fprintf(fw, ", ");
+    }
     fprintf(fw, "\n");
   }
   fclose(fw);
