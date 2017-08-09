@@ -3,7 +3,7 @@
 
 
 void* init_matriz (int rows, int cols) {
-  return malloc (sizeof (int[rows][cols]));
+  return malloc (sizeof (float[rows][cols]));
 }
 
 void* read_matriz (FILE *fr, int *n_row, int *n_col) {
@@ -16,7 +16,7 @@ void* read_matriz (FILE *fr, int *n_row, int *n_col) {
   
   for (i = 0; i < rows; i++) {
     for (j = 0; j < cols; j++) {
-      fscanf(fr, "%d,", &cv);
+      fscanf(fr, "%f,", &cv);
       matriz[i][j] = cv;
     }
   }
@@ -24,8 +24,8 @@ void* read_matriz (FILE *fr, int *n_row, int *n_col) {
   return matriz;
 }
 
-void* multiply_matrices(int ra, int ca, int rb, int cb, int A[][ca], int B[][cb]) {
-  int (*result)[cb] = init_matriz(ra, cb);
+void* multiply_matrices(int ra, int ca, int rb, int cb, float A[][ca], float B[][cb]) {
+  float (*result)[cb] = init_matriz(ra, cb);
   int i, j, k, cell_result;
   
   for (i = 0; i < ra; i++) {
@@ -40,12 +40,12 @@ void* multiply_matrices(int ra, int ca, int rb, int cb, int A[][ca], int B[][cb]
   return result;
 }
 
-void write_result(int rows, int cols, int matriz[][cols]) {
+void write_result(int rows, int cols, float matriz[][cols]) {
   FILE *fw = fopen("resulting_matrix", "w");
   int i, j;
   for (i = 0; i < rows; i++) {
     for (j = 0; j < cols; j++) {
-      fprintf(fw, "%d", matriz[i][j]);
+      fprintf(fw, "%f", matriz[i][j]);
       if (j + 1 < cols) fprintf(fw, ", ");
     }
     fprintf(fw, "\n");
@@ -68,18 +68,18 @@ int main () {
   
   // reading the first file
   fr = fopen("ma", "r");
-  int (*matriz_A)[] = read_matriz(fr, &rows_a, &cols_a);
+  float (*matriz_A)[] = read_matriz(fr, &rows_a, &cols_a);
   //print_matriz(rows_a, cols_a, matriz_A);
   fclose(fr);
   
   // reading the second file
   fr = fopen("mb", "rb");
-  int (*matriz_B)[] = read_matriz(fr, &rows_b, &cols_b);
+  float (*matriz_B)[] = read_matriz(fr, &rows_b, &cols_b);
   //print_matriz(rows_b, cols_b, matriz_B);
   fclose(fr);
   
   //multiplying the matrices
-  int (*result)[] = multiply_matrices(rows_a, cols_a, rows_b, cols_b, matriz_A, matriz_B);
+  float (*result)[] = multiply_matrices(rows_a, cols_a, rows_b, cols_b, matriz_A, matriz_B);
   write_result(rows_a, cols_b, result);
   return 0;
 }
