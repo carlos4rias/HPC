@@ -11,8 +11,9 @@ void* read_matriz (FILE *fr, int *n_row, int *n_col) {
   fscanf(fr, "%d", n_col);
   int rows = *n_row;
   int cols = *n_col;
-  int (*matriz)[cols] = init_matriz(rows, cols);
-  int cv = 0, i, j = 0;
+  float (*matriz)[cols] = init_matriz(rows, cols);
+  float cv = 0;
+  int i, j = 0;
   
   for (i = 0; i < rows; i++) {
     for (j = 0; j < cols; j++) {
@@ -26,7 +27,8 @@ void* read_matriz (FILE *fr, int *n_row, int *n_col) {
 
 void* multiply_matrices(int ra, int ca, int rb, int cb, float A[][ca], float B[][cb]) {
   float (*result)[cb] = init_matriz(ra, cb);
-  int i, j, k, cell_result;
+  int i, j, k;
+  float cell_result = 0;
   
   for (i = 0; i < ra; i++) {
     for (k = 0; k < cb; k++) {
@@ -53,10 +55,10 @@ void write_result(int rows, int cols, float matriz[][cols]) {
   fclose(fw);
 }
 
-void print_matriz(int rows, int cols, int matriz[][cols]) {
+void print_matriz(int rows, int cols, float matriz[][cols]) {
   int i, j;
   for (i = 0; i < rows; i++) {
-    for (j = 0; j < cols; j++) printf("%d ", matriz[i][j]);
+    for (j = 0; j < cols; j++) printf("%f ", matriz[i][j]);
     printf("\n");
   }
 }
@@ -69,17 +71,18 @@ int main () {
   // reading the first file
   fr = fopen("ma", "r");
   float (*matriz_A)[] = read_matriz(fr, &rows_a, &cols_a);
-  //print_matriz(rows_a, cols_a, matriz_A);
+  print_matriz(rows_a, cols_a, matriz_A);
   fclose(fr);
   
   // reading the second file
   fr = fopen("mb", "rb");
   float (*matriz_B)[] = read_matriz(fr, &rows_b, &cols_b);
-  //print_matriz(rows_b, cols_b, matriz_B);
+  print_matriz(rows_b, cols_b, matriz_B);
   fclose(fr);
   
   //multiplying the matrices
   float (*result)[] = multiply_matrices(rows_a, cols_a, rows_b, cols_b, matriz_A, matriz_B);
+  print_matriz(rows_a, cols_b, result);
   write_result(rows_a, cols_b, result);
   return 0;
 }
