@@ -35,7 +35,7 @@ void* multiply_matrices(int ra, int ca, int rb, int cb, float A[][ca], float B[]
 
   int chunk = 10, nthreads;
 
-  #pragma omp parallel shared(A, B, result, chunk) private(i, j, k, tid) num_threads(4)
+  #pragma omp parallel shared(A, B, result, chunk) private(i, j, k, tid) num_threads(8)
     {
       tid = omp_get_thread_num();
       if (tid == 0) {
