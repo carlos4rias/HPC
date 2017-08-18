@@ -35,7 +35,7 @@ void* multiply_matrices(int ra, int ca, int rb, int cb, float A[][ca], float B[]
 
   int chunk = 10, nthreads;
 
-  #pragma omp parallel shared(A, B, result, chunk) private(i, j, k, tid) num_threads(8)
+  #pragma omp parallel shared(A, B, result, chunk) private(i, j, k, tid)
     {
       tid = omp_get_thread_num();
       if (tid == 0) {
@@ -44,7 +44,7 @@ void* multiply_matrices(int ra, int ca, int rb, int cb, float A[][ca], float B[]
       }
 
       //printf("Thread %d starting...\n", tid);
-      #pragma omp for schedule(static, chunk)
+      #pragma omp for schedule(static, chunk) collapse(3)
       for (i = 0; i < ra; i++) {
         for (k = 0; k < cb; k++) {
           for (j = 0; j < ca; j++) {
