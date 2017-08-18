@@ -40,7 +40,7 @@ void* multiply_matrices(int ra, int ca, int rb, int cb, float A[][ca], float B[]
       tid = omp_get_thread_num();
       if (tid == 0) {
         nthreads = omp_get_num_threads();
-        printf("Number of threads = %d\n", nthreads);
+        //printf("Number of threads = %d\n", nthreads);
       }
 
       //printf("Thread %d starting...\n", tid);
@@ -59,7 +59,7 @@ void* multiply_matrices(int ra, int ca, int rb, int cb, float A[][ca], float B[]
 }
 
 void write_result(int rows, int cols, float matriz[][cols]) {
-  FILE *fw = fopen("resulting_matrix", "w");
+  FILE *fw = fopen("resulting_matrix.out", "w");
   int i, j;
   for (i = 0; i < rows; i++) {
     for (j = 0; j < cols; j++) {
@@ -84,13 +84,13 @@ int main () {
   FILE *fr;
 
   // reading the first file
-  fr = fopen("ma", "r");
+  fr = fopen("ma.in", "r");
   float (*matriz_A)[] = read_matriz(fr, &rows_a, &cols_a);
   print_matriz(rows_a, cols_a, matriz_A);
   fclose(fr);
 
   // reading the second file
-  fr = fopen("mb", "rb");
+  fr = fopen("mb.in", "rb");
   float (*matriz_B)[] = read_matriz(fr, &rows_b, &cols_b);
   print_matriz(rows_b, cols_b, matriz_B);
   fclose(fr);
