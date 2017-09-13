@@ -1,3 +1,6 @@
 *.out
 *.pdf
 *.in
+*.info
+*.zip
+*.ipynb
