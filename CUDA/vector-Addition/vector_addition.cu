@@ -13,7 +13,7 @@ __global__ void vec_addition(double *a, double *b, double *c, int n) {
 }
 
 int main(int argc, char* argv[]) {
-  int n = 10, i;
+  int n = 100000, i;
 
   //host io vectors
   double *h_a;
@@ -60,10 +60,10 @@ int main(int argc, char* argv[]) {
   //copy array solution to host
   cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost);
 
-  int sum = 0;
-  for (int i = 0, i < n; i++) sum += h_c[i];
-
-  printf("the result is: %d\n", sum);
+  long long sum = 0;
+  for (i = 0; i < n; i++) sum += h_c[i];
+  sum = sum / 2;
+  printf("the result is: %lld\n", sum);
 
   //release device memory this is very important
   cudaFree(d_a);
