@@ -1,3 +1,4 @@
+//usage, $ ./exec < matrix.csv > matrix_out.csv
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -33,18 +34,18 @@ int main() {
   int sr1, sr2, sc1, sc2, i, j;
   while (scanf("%d, %d", &sr1, &sc1) == 2) {
 
-    mat1 = malloc(sizeof (float) * sr1 * sc1);
+    mat1 = (float *)malloc(sizeof (float) * sr1 * sc1);
     for (i = 0, it = mat1; i < sr1 * sc1; i++) scanf("%f,", it++);
 
 
     scanf("%d, %d", &sr2, &sc2);
-    mat2 = malloc(sizeof (float) * sr2 * sc2);
+    mat2 = (float *)malloc(sizeof (float) * sr2 * sc2);
     for (i = 0, it = mat2; i < sr2 * sc2; i++) scanf("%f,", it++);
     if (sc1 != sr2) {
       printf("invalid matrices\n");
       break;
     }
-    res = malloc(sizeof (float) * sr1 * sc2);
+    res = (float *)malloc(sizeof (float) * sr1 * sc2);
 
     multiply_matrix(mat1, sr1, sc1, mat2, sr2, sc2, res);
     print_matrix(res, sr1, sc2);
