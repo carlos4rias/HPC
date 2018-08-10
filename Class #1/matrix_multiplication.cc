@@ -9,11 +9,13 @@ typedef vector<vector<double>> Matrix;
 
 void multiply_row(int i, int sz, Matrix &A, Matrix &B, Matrix &C, mutex &mt) {
   for (int j = 0; j < sz; j++) {
+    double result = 0.0;
     for (int k = 0; k < sz; k++) {
-      mt.lock();
-      C[i][j] += A[i][k] * B[k][j];
-      mt.unlock();
+      result += A[i][k] * B[k][j];
     }
+    mt.lock();
+    C[i][j] = result;
+    mt.unlock();
   }
 }
 
@@ -44,18 +46,18 @@ int main(int argc, char ** argv) {
   for (auto &i : A) for (auto &j : i) j = real_dist(gen);
   for (auto &i : B) for (auto &j : i) j = real_dist(gen);
   
-  cout << "Matrix size " << n << endl;
-  print_matrix("A", A);
-  print_matrix("B", B);
+  // cout << "Matrix size " << n << endl;
+  // print_matrix("A", A);
+  // print_matrix("B", B);
 
-  vector<thread> threads;
+  vector<thread> threads(n);
   
   for (int i = 0; i < n; i++) {
-    threads.emplace_back(thread(&multiply_row, i, n, ref(A), ref(B), ref(C), ref(write_cell)));
+    threads[i] = thread(&multiply_row, i, n, ref(A), ref(B), ref(C), ref(write_cell));
   }
 
   for (auto &thread : threads) thread.join();
-  print_matrix("Resulting Matrix", C);
+  // print_matrix("Resulting Matrix", C);
   
   return 0;
 }
