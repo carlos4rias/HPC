@@ -1,4 +1,8 @@
 import numpy
+import sys
+
+n = int(sys.argv[1])
+# print (sys.argv)
 
 def print_matrix(mat):
     for i in mat:
@@ -7,7 +11,7 @@ def print_matrix(mat):
         print('\n')
 
 
-rows, cols = (1500, 1500)
+rows, cols = (n, n)
 mat1 = numpy.random.random((rows, cols))
 mat2 = numpy.random.random((rows, cols))
 print (str(rows) + ', ' + str(cols))

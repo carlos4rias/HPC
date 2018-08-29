@@ -20,13 +20,12 @@ void multiply_matrix(float *mat1, int r1, int c1, float *mat2, int r2, int c2, f
   int pos_matrix1, pos_matrix2;
   int i, j, k, tid, acc;
   for (i = 0; i < r1 * c2; i++) res[i] = 0;
-  
+
   time_t t_init = time(NULL);
   double init_t = omp_get_wtime( );
 
-  #pragma omp parallel shared(mat1, r1, c1, mat2, r2, c2, res) private(i, j, k, acc, tid)
+  #pragma omp shared(mat1, r1, c1, mat2, r2, c2, res) private(i, j, k, acc, tid)
   {
-
     #pragma omp for schedule(dynamic, CHUNK)
     for (i = 0; i < r1; i++) {
       for (j = 0; j < c2; j++) {
@@ -36,6 +35,7 @@ void multiply_matrix(float *mat1, int r1, int c1, float *mat2, int r2, int c2, f
       }
     }
   }
+
   time_t t_end = time(NULL);
   double end_t = omp_get_wtime( ); 
   printf("{\n");
