@@ -4,7 +4,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.provision "shell", inline: "apt-get install g++ git make cmake gcc build-essential mpic++"
+  config.vm.provision "shell", path: "provision.sh"
 
   config.vm.define "master" do |master|
     master.vm.box = "ubuntu/trusty64"
