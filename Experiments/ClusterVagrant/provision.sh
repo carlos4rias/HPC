@@ -61,8 +61,9 @@ sshkeys_copy(){
       if [[ ! -e /vagrant/id_rsa ]]; then
         ssh-keygen -t rsa -b 4096 -f /vagrant/id_rsa -N ""
       fi
-
+      
       (echo; cat /vagrant/id_rsa.pub) >> /home/vagrant/.ssh/authorized_keys
+      cp /vagrant/id_rsa* /home/vagrant/.ssh/
 }
 
 test_connectionssh(){
