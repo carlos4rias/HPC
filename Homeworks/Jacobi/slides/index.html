@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>Jacobi-Speeding up</title>
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/simple.css">
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+	
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+					<h2 >Speeding Up: Jacobi Iterative Solution of Poisson’s Equation in 1D</h2>
+					<h4>High Performance Computing, Universidad Tecnologica de Pereira</h4>
+					<h5>2018 - 2</h5>
+					<p>
+						<small>Created by <a href="http://github.com/h3ct0rjs">Hector F. Jimenez S.</a> and <a href="http://github.com/carlos4rias">Carlos Andres Arias Londoño</a> </small>
+					</p>
+				</section>
+
+				<section  style="text-align: left;">
+					<h2 >Content</h2>
+					<ol>
+						<li class="fragment fade-up">Paper Context</li>
+						<li class="fragment fade-up">Algorithm Explanation</li>
+						<li class="fragment fade-up">Sequential Algorithm</li>
+						<li class="fragment fade-up">Threads and Parallel Results</li>
+					</ol>
+				</section>
+	
+				<section>
+					<section>
+						<h2 >Paper Context</h2>
+						<img src="https://tstotopix.files.wordpress.com/2014/01/tapped_out_question_mark.png" alt="" height="300" width="300" alt="" style="background:none; border:none; box-shadow:none;">
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+							## Modern numerical techniques
+							>  A numerical **method** is a mathematical tool designed to solve numerical problems. The implementation of a numerical method with an appropriate convergence check in a programming language is called a *numerical algorithm* 
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							## Modern numerical techniques
+							Numerical methods for ordinary differential equations are methods used to find numerical approximations to the solutions of ordinary differential equations (ODEs)							
+						</script>
+					</section>
+
+					<section>
+						<h3>Function Sample</h3>
+						Lets Consider : 
+						\[\begin{aligned}
+						f(x) = sin(x)
+						\end{aligned} \]
+						The basic idea of differential calculus is that, close to a point, a function and its tangent line do not differ very much.<br>
+						<img src="http://www.sosmath.com/diffeq/first/numerical/etc/14E1.GIF" height="300" width="500" alt="" style="background:none; border:none; box-shadow:none;">
+					</section>
+					<section>
+						<h3>Function Sample</h3>
+						<img src="http://www.sosmath.com/diffeq/first/numerical/etc/14E2.GIF" height="300" width="500" alt="" style="background:none; border:none; box-shadow:none;">
+					</section>
+					<section>
+						<h3>Function Sample</h3>
+						<img src="http://www.sosmath.com/diffeq/first/numerical/etc/14E3.GIF" height="300" width="500" alt="" style="background:none; border:none; box-shadow:none;">
+					</section>
+					<section>
+						<h3>Function Sample</h3>
+						<img src="http://www.sosmath.com/diffeq/first/numerical/etc/14E4.GIF" height="300" width="500" alt="" style="background:none; border:none; box-shadow:none;">
+					</section>
+
+					<section id="fragments">
+						<h2>Discretization of Poisson’s Equation in 1D</h2>
+						<p class="fragment grow">Let's do this!</p>
+					</section>
+					<section style="text-align: left;">
+						We consider the case in 1D : 
+							\[\begin{aligned}
+							u_{xx} = f(x) \quad or \quad
+							\frac{\partial{u}}{\partial{t}}=\frac{\partial^2{u}}{\partial{x^2}}\\with\quad boundary\quad conditions \quad:\\0 < x < 1\\and\quad n\quad intervals\\x_i = ih\\h=\frac{1}{n}
+							\end{aligned}\]
+					</section>
+					<section>
+							\[
+							\frac{\partial^2}{\partial x^2} u(x_i) = \frac{u_{i-1} -2 u_i + u_{i+1}}{h^2} - \frac{h^2}{12} \frac{\partial^4}{\partial x^4}u(\xi_i)
+							\]
+					</section>
+					<section>
+							<h2>Discretized Poisson System</h2>
+							\[\begin{aligned}
+							\frac{v_{i-1}-2v_i+v_{i+1}}{h^2} = f_i
+							\end{aligned}\]
+					</section>
+					
+					<section>
+							<h2>Discretized Poisson System</h2>
+							Simplifying the equation when you multiply all but the first and last equation by <i>h<sup>2</sup></i> we get : 
+							\[\begin{aligned}
+							u_{1} =u_{a}\\
+							−u_{1} + 2u_{2} − u_{3} =h^2f(x_{2})\\
+							−u_{2} + 2u_{3} − u_{4} =h^2f(x_{3})\\
+							\ldots
+							\end{aligned}\]
+					</section>
+					
+
+					<section>Linear System
+							\[\begin{aligned}
+							\frac{1}{h^2} \begin{bmatrix} -2 & 1 & & & & & \\ 1 & -2 & 1 & & & & \\ & 1 & -2 & 1 & & & \\ & & \cdot & \cdot & \cdot & & \\ & & & \cdot & \cdot & \cdot & \\ & & & & 1 & -2 & 1 \\ & & & & & 1 & -2\end{bmatrix} \begin{bmatrix} u_1 \\ u_2 \\ u_3 \\ \cdot \\ \cdot \\ u_{n-2} \\ u_{n-1} \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \\ f_3 \\ \cdot \\ \cdot \\ f_{n-2} \\ f_{n-1} \end{bmatrix}
+							\end{aligned}\]
+					</section>
+					<section>
+							<p>Spanish Resource for discretization</p>
+							  <small id="fn1"><a href="#r1">[1]</a> All the info <a href="https://jadsuafu.wordpress.com/2012/11/29/matrices-a-bandas-para-la-discretizacion-1d-2d-y-3d-de-la-ecuacion-de-poisson/">here</a></small>
+					</section>			
+				</section>
+				<section>
+					<section>
+						<h2 >Algorithm Explanation</h2>
+						<img src="https://cdn-images-1.medium.com/max/1500/1*nUZTZdDBKuci35Ss42bhbQ.jpeg" alt=""  alt="" style="background:none; border:none; box-shadow:none;">
+					</section>
+					<section>We need to solve this linear System
+							\[\begin{aligned}
+							\frac{1}{h^2} \begin{bmatrix} -2 & 1 & & & & & \\ 1 & -2 & 1 & & & & \\ & 1 & -2 & 1 & & & \\ & & \cdot & \cdot & \cdot & & \\ & & & \cdot & \cdot & \cdot & \\ & & & & 1 & -2 & 1 \\ & & & & & 1 & -2\end{bmatrix} \begin{bmatrix} u_1 \\ u_2 \\ u_3 \\ \cdot \\ \cdot \\ u_{n-2} \\ u_{n-1} \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \\ f_3 \\ \cdot \\ \cdot \\ f_{n-2} \\ f_{n-1} \end{bmatrix}
+							\end{aligned}\]
+					</section>
+					<section>Doing and abstraction is possible to short this to :
+							\[\begin{aligned}
+							A ∗ u = f 
+							\end{aligned}\]
+							where A is a vector of n*n, U is an unknow value and f is the discretized function or initial values.
+					</section>
+					<section data-markdown>
+							<script type="text/template">
+								### Requirements to run the Algorithm:
+								Based on the sample code provided by Ramiro to use the Jacobi Iterative Solver:
+								- ***nsweep constant:***The number of iterations of the algorithm is going to run.
+								- ***n constant:*** the number of partitions.
+								- ***u vector:*** The solution vector, where we are going to store after running the algorithm.
+								- ***f vector:*** A vector that contains the initials values given by the previous conditions of **h**
+							</script>
+					</section>
+				</section>
+				
+				<section>
+					<section>
+							<h2>	<a href="http://localhost:8888/notebooks/graphs.ipynb">Open the Jupyter notebook :) </a></h2>
+						</section>
+				</section>
+			
+				</section>
+				<!--End of Paper Context-->
+				<!--
+				<section>
+					
+					<section>
+						<h3>An Overview of Access Control</h3>
+						<p class="fragment "><i>The term Access Control actually refers to the<span class="highlight-red">control over access to system resources</span>  after a user's account credentials and identity have been authenticated and access to the system granted.</i></p>
+						<span class="fragment highlight-red ">control over access to system resources</span>
+						<p class="fragment fade-up"><i> For example, a particular user, or group of users, might only be permitted access to certain files after logging into a system, while simultaneously being denied access to all other resources</i></p>
+					</section>
+				</section>z-->
+				<section>
+					<h2>References</h2>
+					<ol>
+						<li>https://learning-modules.mit.edu/materials/index.html?uuid=/course/16/fa17/16.920#materials</li>
+						<li>http://www.sosmath.com/diffeq/diffeq.html</li>
+						<li><a href="https://www.youtube.com/watch?v=2zJ2fAs_2L4&ab_channel=QiqiWang">The matrix system for finite element discretization of the Poisson's equation</a></li>
+						<li>Omp <a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/omp-loop.html">Pragmas</a> </li>
+					</ol>
+				</section>
+			
+			</div>
+		</div>
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+		<script>
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/math/math.js', async: true}
+				]
+			});
+		</script>
+	</body>
+</html>
