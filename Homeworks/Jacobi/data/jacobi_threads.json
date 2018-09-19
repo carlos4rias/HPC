@@ -1,0 +1,62 @@
+[
+{
+"N": 100,
+"Steps": 100,
+"Elapsed time:" : 2926558
+},
+{
+"N": 100,
+"Steps": 1000,
+"Elapsed time:" : 17505406
+},
+{
+"N": 100,
+"Steps": 10000,
+"Elapsed time:" : 167298247
+},
+{
+"N": 1000,
+"Steps": 100,
+"Elapsed time:" : 2857983
+},
+{
+"N": 1000,
+"Steps": 1000,
+"Elapsed time:" : 20927422
+},
+{
+"N": 1000,
+"Steps": 10000,
+"Elapsed time:" : 213283853
+},
+{
+"N": 10000,
+"Steps": 100,
+"Elapsed time:" : 9890120
+},
+{
+"N": 10000,
+"Steps": 1000,
+"Elapsed time:" : 106628029
+},
+{
+"N": 10000,
+"Steps": 10000,
+"Elapsed time:" : 1032579234
+},
+{
+"N": 100000,
+"Steps": 100,
+"Elapsed time:" : 94238971
+},
+{
+"N": 100000,
+"Steps": 1000,
+"Elapsed time:" : 906324714
+},
+{
+"N": 100000,
+"Steps": 10000,
+"Elapsed time:" : 9059875954
+}
+]

@@ -44,3 +44,5 @@ boxes/*
 /vagrant-spec.config.rb
 test/vagrant-spec/.vagrant/
 .vagrant
+id_rsa*
+tmp/
