@@ -1,9 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-
 #include <omp.h>
-
 #include "timer.hh"
 
 using namespace std;
@@ -15,11 +13,12 @@ void jacobi(int nsweeps, int n, vector<double> &u, vector<double> &f) {
   utmp[0] = u[0];
   utmp[n] = u[n];
 
-  #pragma omp parallel for shared(u, utmp, f) schedule(dynamic)
   for ( int sweep = 0; sweep < nsweeps; sweep += 2 ) {
+    #pragma omp parallel for schedule(dynamic)
     for ( int i = 1; i < n; ++i )
       utmp[i] = (u[i - 1] + u[i + 1] + h2 * f[i]) / 2;
-
+    
+    #pragma omp parallel for schedule(dynamic)
     for ( int i = 1; i < n; ++i )
       u[i] = (utmp[i - 1] + utmp[i + 1] + h2 * f[i]) / 2;
   }
