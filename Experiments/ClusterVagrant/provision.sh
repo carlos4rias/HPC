@@ -64,6 +64,8 @@ sshkeys_copy(){
       
       (echo; cat /vagrant/id_rsa.pub) >> /home/vagrant/.ssh/authorized_keys
       cp /vagrant/id_rsa* /home/vagrant/.ssh/
+      chown vagrant:vagrant /home/vagrant/.ssh/id_rsa*
+
 }
 
 test_connectionssh(){
