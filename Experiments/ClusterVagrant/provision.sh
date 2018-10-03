@@ -19,6 +19,7 @@ main() {
 	autoremove_go
 	hostnames_go
 	sshkeys_copy
+	nfs_folder
 }	
 
 repositories_go() {
@@ -65,7 +66,30 @@ sshkeys_copy(){
       (echo; cat /vagrant/id_rsa.pub) >> /home/vagrant/.ssh/authorized_keys
       cp /vagrant/id_rsa* /home/vagrant/.ssh/
       chown vagrant:vagrant /home/vagrant/.ssh/id_rsa*
+}
 
+nfs_folder(){
+        echo -e "[${WHITE}Ok${NC}] Setting up Shared FileSystem"
+
+	if [ "$HOSTNAME" = "master" ]; then
+ 		echo -e "[${WHITE}Ok${NC}] Installing NFS on Master Node"
+		mkdir /home/vagrant/cloud	#Create the cloud folder to shared accross the cluster :) 
+		chown vagrant:vagrant  /home/vagrant/cloud
+		apt install -y nfs-server
+		echo "/home/vagrant/cloud *(rw,sync,no_root_squash,no_subtree_check)">>/etc/exports	#Persistence against reboots.
+		exportfs -a
+		service nfs-kernel-server restart
+	else 
+		echo -e "[${WHITE}Ok${NC}] Installing NFS on Worker Node"
+		apt install -y nfs-common
+		mkdir /home/vagrant/cloud
+		chown vagrant:vagrant  /home/vagrant/cloud
+		mount -t nfs master:/home/vagrant/cloud /home/vagrant/cloud
+		echo "master:/home/vagrant/cloud /home/vagrant/cloud nfs">>/etc/fstab 
+		df -h
+	fi
+
+	echo -e "[${YELLOW}Ok${NC}]NFS DONE"
 }
 
 test_connectionssh(){
