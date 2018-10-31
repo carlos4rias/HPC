@@ -50,10 +50,12 @@ tools_go() {
 }
 
 hostnames_go(){
+	echo -e "[${WHITE}Ok${NC}] Setting Hostnames"
 	echo "10.11.12.50 master">>/etc/hosts
-	echo "10.11.12.51 worker1">>/etc/hosts
-	echo "10.11.12.52 worker2">>/etc/hosts
-	echo "10.11.12.53 worker3">>/etc/hosts
+
+	for i in `seq 2 5`;do 
+		echo "10.11.12.${i} worker${i}">>/etc/hosts	
+	done 
 }
 
 sshkeys_copy(){
